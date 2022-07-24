@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# displays line contains the word bash
+
+ps -C bash
