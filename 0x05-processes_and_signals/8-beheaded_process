@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# kill any process
+# shellcheck
+kill -9 $(pgrep -f 7-highlander)
