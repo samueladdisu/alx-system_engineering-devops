@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # to file or not to file
-flie="school"
+file="school"
 if [ -e "$file" ]
 then
 	echo "school file exits"
