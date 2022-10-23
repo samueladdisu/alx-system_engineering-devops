@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # list all file in current dir
-for i in $( ls )
+for i in $(ls)
 do
 	echo "$i" | cut -d- -f2
 done
