@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 # start nginx  service
-service nginx status
-service nginx start
+service apache2 status
+service apache2 start
