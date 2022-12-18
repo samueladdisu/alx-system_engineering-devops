@@ -1,41 +1,20 @@
-# configure new Server
-
+# install nginx
 package { 'nginx':
-  ensure => 'installed',
+  ensure => installed,
 }
-$conf = "server {
-	listen   80 default_server;
-	listen   [::]:80 default_server;
-	root     /var/www/html;
-	index    index.html index.htm;
-	location /redirect_me {
-		return 301 https://www.youtube.com;
-	}
-	error_page 404 /custom_404.html;
-	location = /custom_404.html {
-		root /var/www/errors/;
-		internal;
-	}
-		
-}
-"
 
-file {'/etc/nginx/sites-available/default':
-  ensure  => 'present',
-  content => $conf
+file_line { 'aaaaa':
+  ensure => 'present',
+  path   => '/etc/nginx/sites-available/default',
+  after  => 'listen 80 default_server;',
+  line   => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;',
 }
 
 file { '/var/www/html/index.html':
-  ensure  => 'present',
-  content => 'Hello World!'
+  content => 'Hello World!',
 }
 
-file { '/var/www/errors/custom_404.html':
-  ensure  => 'present',
-  content => "Ceci n\'est pas une page"
-}
-
-service {'nginx':
+service { 'nginx':
   ensure  => running,
-  require => Package['nginx']
+  require => Package['nginx'],
 }
