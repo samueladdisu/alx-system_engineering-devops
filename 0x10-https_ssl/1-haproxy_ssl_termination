@@ -1,20 +1,38 @@
 global
-        #pass
-        tune.ssl.default-dh-param 2048
+    log 127.0.0.1 local0 notice
+    maxconn 2000
+    user haproxy
+    group haproxy
+
 defaults
-        mode    http
-        option httpclose
-        timeout connect 5000ms
-        timeout client  5000ms
-        timeout server  5000ms
-frontend app
-        bind *:80
-        bind *:443 ssl crt /etc/haproxy/certs/gtexk.tech.pem
-        redirect scheme https if !{ ssl_fc }
-        http-request set-header X-Forwarded-Proto https if { ssl_fc }
-        stats uri /haproxy?stats
-        default_backend web-backend
-backend web-backend
-        balance roundrobin
-        server 14407-web-01 3.236.223.114:80 check
-        server 14407-web-02 3.236.145.87:80 check
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    option redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+
+frontend www-http
+   bind   0.0.0.0:80
+   reqadd X-Forwarded-Proto:\ http
+   default_backend www-backend
+
+frontend www-https
+   bind   0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.fitsefani.tech/all.pem
+   reqadd X-Forwarded-Proto:\ https
+   acl    letsencrypt-acl path_beg /.well-known/acme-challenge/
+   use_backend letsencrypt-backend if letsencrypt-acl
+   default_backend www-backend
+
+backend www-backend
+   balance  roundrobin
+   redirect scheme https if !{ ssl_fc }
+   server 4040-web-01 100.25.14.210:80 check
+   server 4040-web-02 34.227.91.149:80 check
+
+backend letsencrypt-backend
+   server letsencrypt 127.0.0.1:54321
+
